@@ -5,7 +5,7 @@
       <NuxtLink to="/search">Search</NuxtLink>
     </nav>
 
-    <NuxtLink to="/">← Back to Home</NuxtLink>
+    <NuxtLink to="/">Back</NuxtLink>
 
     <p v-if="pending">Loading post...</p>
     <p v-else-if="error">Failed to load post.</p>
