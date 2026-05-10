@@ -11,8 +11,8 @@
     <p v-else-if="error">Failed to load post.</p>
 
     <div v-else-if="post">
-      <h1>{{ post.attributes.title }}</h1>
-      <p>By {{ post.attributes.author }} | {{ post.attributes.category }}</p>
+      <h1>{{ post.title }}</h1>
+      <p>By {{ post.author }} | {{ post.category }}</p>
       <hr />
       <div v-html="renderedContent" />
     </div>

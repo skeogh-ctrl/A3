@@ -31,8 +31,8 @@ const results = computed(() => {
   const q = query.value.toLowerCase()
   if (!q) return posts.value
   return posts.value.filter(p =>
-    p.attributes.title.toLowerCase().includes(q) ||
-    p.attributes.author.toLowerCase().includes(q)
+    p.title.toLowerCase().includes(q) ||
+    p.author.toLowerCase().includes(q)
   )
 })
 </script>
