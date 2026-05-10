@@ -7,59 +7,25 @@
 
     <h1>Search</h1>
 
-    <input
-      v-model="query"
-      type="text"
-      placeholder="Search by title or author..."
-    />
+    <input v-model="query" type="text" placeholder="Search by title or author..." />
 
-    <p v-if="query && results.length === 0">No results found.</p>
+    <p v-if="pending">Loading...</p>
+    <p v-else-if="error">Failed to load posts.</p>
+    <p v-else-if="query && results.length === 0">No results found.</p>
 
-    <div v-for="post in results" :key="post.id">
-      <PostCard :post="post" />
-    </div>
+    <PostCard v-for="post in results" :key="post.id" :post="post" />
   </div>
 </template>
 
 <script setup>
-
-const posts = ([
-{
-  id: 1,
-  attributes: {
-    title: 'My First Post',
-    author: 'Jane Doe',
-    snippet: 'preview',
-    content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-    category: 'Tech',
-    slug: 'my-first-post'
-  }
-},
-{
-  id: 2,
-  attributes: {
-    title: 'A Lifestyle Post',
-    author: 'John Smith',
-    snippet: 'preview',
-    content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-    category: 'Lifestyle',
-    slug: 'a-lifestyle-post'
-  }
-},
-{
-  id: 3,
-  attributes: {
-    title: 'Breaking News',
-    author: 'Jane Doe',
-    snippet: 'preview',
-    content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-    category: 'News',
-    slug: 'breaking-news'
-  }
-}
-])
-
+const config = useRuntimeConfig()
 const query = ref('')
+
+const { data, pending, error } = await useFetch(
+  `${config.public.apiBase}/api/blog-posts?populate=*`
+)
+
+const posts = computed(() => data.value?.data || [])
 
 const results = computed(() => {
   const q = query.value.toLowerCase()

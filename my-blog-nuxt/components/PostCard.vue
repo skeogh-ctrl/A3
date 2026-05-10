@@ -1,10 +1,10 @@
 <template>
   <div class="post-card">
-    <NuxtLink :to="`/posts/${post.attributes.slug}`">
-      <h2>{{ post.attributes.title }}</h2>
-    </NuxtLink>
-    <p>{{ post.attributes.author }} · {{ post.attributes.category }}</p>
-    <p>{{ post.attributes.snippet }}</p>
+   
+      <h2>{{ post.title }}</h2>
+  
+    <p>{{ post.author }} · {{ post.category }}</p>
+    <p>{{ post.snippet }}</p>
   </div>
 </template>
 

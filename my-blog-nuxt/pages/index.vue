@@ -5,65 +5,35 @@
       <NuxtLink to="/search">Search</NuxtLink>
     </nav>
 
-    <h1>Blog Homepage</h1>
+    <h1>Blog</h1>
 
-    <!-- Category filter dropdown (hardcoded for now) -->
-    <select v-model="selectedCategory">
-      <option value="">All Categories</option>
-      <option value="Tech">Tech</option>
-      <option value="Lifestyle">Lifestyle</option>
-      <option value="News">News</option>
-    </select>
+    <CategoryFilter :categories="categories" v-model="selectedCategory" />
 
-    <!-- Placeholder posts (will be replaced with API data later) -->
-    <div v-for="post in filteredPosts" :key="post.id">
-      <PostCard :post="post" />
+    <p v-if="pending">Loading posts...</p>
+    <p v-else-if="error">Failed to load posts.</p>
+
+    <div class="post-grid">
+      <PostCard v-for="post in filteredPosts" :key="post.id" :post="post" />
     </div>
   </div>
 </template>
 
 <script setup>
-// Hardcoded placeholder data — will be replaced with Strapi API later
-const posts = ref([
-  {
-    id: 1,
-  attributes: {
-    title: 'My First Post',
-    author: 'Jane Doe',
-    snippet: 'preview',
-    content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-    category: 'Tech',
-    slug: 'my-first-post'
-  }
-},
-{
-  id: 2,
-  attributes: {
-    title: 'A Lifestyle Post',
-    author: 'John Smith',
-    snippet: 'preview',
-    content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-    category: 'Lifestyle',
-    slug: 'a-lifestyle-post'
-  }
-},
-{
-  id: 3,
-  attributes: {
-    title: 'Breaking News',
-    author: 'Jane Doe',
-    snippet: 'preview',
-    content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-    category: 'News',
-    slug: 'breaking-news'
-  }
-  }
-])
-
+const config = useRuntimeConfig()
 const selectedCategory = ref('')
+
+const { data, pending, error } = await useFetch(
+  `${config.public.apiBase}/api/blog-posts?populate=*`
+)
+
+const posts = computed(() => data.value?.data || [])
+
+const categories = computed(() => [
+  ...new Set(posts.value.map(p => p.category))
+])
 
 const filteredPosts = computed(() => {
   if (!selectedCategory.value) return posts.value
-  return posts.value.filter(p => p.attributes.category === selectedCategory.value)
+  return posts.value.filter(p => p.category === selectedCategory.value)
 })
 </script>

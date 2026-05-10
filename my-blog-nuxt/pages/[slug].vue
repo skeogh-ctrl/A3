@@ -7,12 +7,14 @@
 
     <NuxtLink to="/">← Back to Home</NuxtLink>
 
-    <div v-if="post">
+    <p v-if="pending">Loading post...</p>
+    <p v-else-if="error">Failed to load post.</p>
+
+    <div v-else-if="post">
       <h1>{{ post.attributes.title }}</h1>
       <p>By {{ post.attributes.author }} | {{ post.attributes.category }}</p>
       <hr />
-   
-      <p>{{ post.attributes.content }}</p>
+      <div v-html="renderedContent" />
     </div>
 
     <div v-else>
@@ -22,47 +24,18 @@
 </template>
 
 <script setup>
+import { marked } from 'marked'
+
+const config = useRuntimeConfig()
 const route = useRoute()
 
-
-const allPosts = [
-  {
-    id: 1,
-    attributes: {
-      title: 'My First Post',
-      author: 'Jane Doe',
-      snippet: 'preview',
-      content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-      category: 'Tech',
-      slug: 'my-first-post'
-    }
-  },
-  {
-    id: 2,
-    attributes: {
-      title: 'A Lifestyle Post',
-      author: 'John Smith',
-      snippet: 'preview',
-      content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-      category: 'Lifestyle',
-      slug: 'a-lifestyle-post'
-    }
-  },
-  {
-    id: 3,
-    attributes: {
-      title: 'Breaking News',
-      author: 'Jane Doe',
-      snippet: 'preview',
-      content: 'fjshdjfh sjdkfhdskjfhsdk djfhsdkjf',
-      category: 'News',
-      slug: 'breaking-news'
-    }
-  }
-]
-
-
-const post = computed(() =>
-  allPosts.find(p => p.attributes.slug === route.params.slug)
+const { data, pending, error } = await useFetch(
+  `${config.public.apiBase}/api/blog-posts?filters[slug][$eq]=${route.params.slug}&populate=*`
 )
+
+const post = computed(() => data.value?.data?.[0])
+
+const renderedContent = computed(() => {
+  return post.value ? marked(post.value.content) : ''
+})
 </script>
